@@ -1,17 +1,25 @@
-# pyrefly: ignore [missing-import]
+import os
+
 from sqlalchemy import create_engine
-# pyrefly: ignore [missing-import]
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Connect to the MySQL Docker container
 SQLALCHEMY_DATABASE_URL = (
     os.getenv("MYSQL_URL")
     or os.getenv("DATABASE_URL")
     or "mysql+pymysql://user:password@localhost:3306/cardioguard_db"
 )
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_pre_ping=True
+)
+
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
 Base = declarative_base()
 
 def get_db():
