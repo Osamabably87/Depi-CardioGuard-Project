@@ -234,11 +234,11 @@ async def lifespan(app: FastAPI):
         # ====================================================
 
         consumer = ECGConsumer(
-            predictor=predictor,
-            report_generator=report_generator,
-            broker_url=os.getenv("KAFKA_BROKER_URL", "localhost:9092"),
-            topic_name="live_ecg_stream"
-        )
+    predictor=predictor,
+    report_generator=report_generator,
+    broker_url=os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+    topic_name="live_ecg_stream",
+)
 
         app.state.consumer = consumer
 
