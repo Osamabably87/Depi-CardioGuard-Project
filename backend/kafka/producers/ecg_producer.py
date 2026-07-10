@@ -60,6 +60,7 @@ import random
 import signal
 import sys
 import time
+import os
 
 from datetime import datetime, timezone
 from pathlib import Path
@@ -265,23 +266,23 @@ class LiveECGProducer:
 
         self.producer = Producer(
             {
-                "bootstrap.servers": self.broker_url,
+                "bootstrap.servers": os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+
+                "security.protocol": "SASL_SSL",
+                "sasl.mechanism": "SCRAM-SHA-256",
+                "sasl.username": os.getenv("KAFKA_USERNAME"),
+                "sasl.password": os.getenv("KAFKA_PASSWORD"),
+
+                "ssl.ca.location": os.getenv("KAFKA_SSL_CA"),
+
                 "client.id": "cardioguard_ptbxl_replay",
 
-                # Small batching helps throughput without creating
-                # the huge UI delay seen previously.
                 "linger.ms": 5,
-
-                # Keep retries enabled for temporary broker issues.
-                "retries": 5,
-
-                # Avoid extremely long invisible queue buildup.
-                "message.timeout.ms": 10000,
-
-                # Compression is useful for free hosting / bandwidth.
-                "compression.type": "snappy",
-            }
-        )
+        "retries": 5,
+        "message.timeout.ms": 10000,
+        "compression.type": "snappy",
+    }
+)
 
         logger.info(
             "Kafka Producer successfully initialized."

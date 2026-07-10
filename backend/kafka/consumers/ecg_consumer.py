@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+import os
 
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
@@ -180,7 +181,14 @@ class ECGConsumer:
 
             self.consumer = Consumer({
                 "bootstrap.servers":
-                    self.broker_url,
+                    os.getenv("KAFKA_BOOTSTRAP_SERVERS"),
+
+                "security.protocol": "SASL_SSL",
+                "sasl.mechanism": "SCRAM-SHA-256",
+                "sasl.username": os.getenv("KAFKA_USERNAME"),
+                "sasl.password": os.getenv("KAFKA_PASSWORD"),
+
+                "ssl.ca.location": os.getenv("KAFKA_SSL_CA"),
 
                 "group.id":
                     group_id,
